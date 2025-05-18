@@ -51,7 +51,7 @@ class AdminController extends AbstractController
             return $this->redirectToRoute('admin_product_index');
         }
 
-        return $this->render('admin/createProduct/index.html.twig', [ // ✅ Corrigé : "createProduct" au lieu de "CreatProduct"
+        return $this->render('admin/CreatProduct/index.html.twig', [ // ✅ Corrigé : "createProduct" au lieu de "CreatProduct"
             'form' => $form->createView()
         ]);
     }
