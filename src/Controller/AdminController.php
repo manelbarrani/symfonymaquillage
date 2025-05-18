@@ -1,11 +1,10 @@
 <?php
 
-// src/Controller/AdminController.php
 namespace App\Controller;
 
 use App\Entity\Produit;
 use App\Entity\User;
-use App\Entity\Order;
+use App\Entity\Ordre;
 use App\Form\ProduitType;
 use App\Form\UserType;
 use Doctrine\ORM\EntityManagerInterface;
@@ -20,8 +19,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 #[IsGranted('ROLE_ADMIN')]
 class AdminController extends AbstractController
 {
-    
-
+    // ✅ Liste des produits avec pagination
     #[Route('/products', name: 'admin_product_index')]
     public function products(EntityManagerInterface $em, PaginatorInterface $paginator, Request $request): Response
     {
@@ -37,6 +35,7 @@ class AdminController extends AbstractController
         ]);
     }
 
+    // ✅ Création d’un produit
     #[Route('/createProduct', name: 'admin_product_new')]
     public function newProduct(Request $request, EntityManagerInterface $em): Response
     {
@@ -48,15 +47,16 @@ class AdminController extends AbstractController
             $em->persist($product);
             $em->flush();
 
-            $this->addFlash('success', 'Product created successfully');
+            $this->addFlash('success', 'Produit créé avec succès.');
             return $this->redirectToRoute('admin_product_index');
         }
 
-        return $this->render('admin/CreatProduct/index.html.twig', [
+        return $this->render('admin/createProduct/index.html.twig', [ // ✅ Corrigé : "createProduct" au lieu de "CreatProduct"
             'form' => $form->createView()
         ]);
     }
 
+    // ✅ Liste des utilisateurs
     #[Route('/users', name: 'admin_user_index')]
     public function users(EntityManagerInterface $em, PaginatorInterface $paginator, Request $request): Response
     {
@@ -72,6 +72,7 @@ class AdminController extends AbstractController
         ]);
     }
 
+    // ✅ Modifier un produit
     #[Route('/products/edit/{id}', name: 'admin_product_edit')]
     public function editProduct(Request $request, Produit $product, EntityManagerInterface $em): Response
     {
@@ -79,10 +80,9 @@ class AdminController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Handle image upload if using VichUploader
             $em->flush();
 
-            $this->addFlash('success', 'Product updated successfully');
+            $this->addFlash('success', 'Produit mis à jour avec succès.');
             return $this->redirectToRoute('admin_product_index');
         }
 
@@ -92,29 +92,59 @@ class AdminController extends AbstractController
         ]);
     }
 
-    // Delete route
+    // ✅ Supprimer un produit
     #[Route('/products/delete/{id}', name: 'admin_product_delete', methods: ['POST'])]
     public function deleteProduct(Request $request, Produit $product, EntityManagerInterface $em): Response
     {
         if ($this->isCsrfTokenValid('delete'.$product->getId(), $request->request->get('_token'))) {
             $em->remove($product);
             $em->flush();
+
+            $this->addFlash('success', 'Produit supprimé.');
         }
-        
+
         return $this->redirectToRoute('admin_product_index');
     }
-     
 
-    // Delete user route
+    // ✅ Supprimer un utilisateur
     #[Route('/users/delete/{id}', name: 'admin_user_delete', methods: ['POST'])]
     public function deleteUser(Request $request, User $user, EntityManagerInterface $em): Response
     {
         if ($this->isCsrfTokenValid('delete'.$user->getId(), $request->request->get('_token'))) {
             $em->remove($user);
             $em->flush();
+
+            $this->addFlash('success', 'Utilisateur supprimé.');
         }
-        
+
         return $this->redirectToRoute('admin_user_index');
     }
-    
+
+    // ✅ Liste des commandes
+    #[Route('/orders', name: 'admin_order_index')]
+    public function orders(EntityManagerInterface $em, PaginatorInterface $paginator, Request $request): Response
+    {
+        $query = $em->getRepository(Ordre::class)->createQueryBuilder('o')->orderBy('o.createdAt', 'DESC');
+        $pagination = $paginator->paginate(
+            $query,
+            $request->query->getInt('page', 1),
+            10
+        );
+
+        return $this->render('admin/order/index.html.twig', [
+            'orders' => $pagination
+        ]);
+    }
+        #[Route('/admin/order/{id}/delete', name: 'admin_order_delete', methods: ['POST'])]
+    public function deleteOrder(Request $request, EntityManagerInterface $em, Ordre $order): RedirectResponse
+    {
+        // Protection contre les CSRF tokens si tu utilises un formulaire
+        if ($this->isCsrfTokenValid('delete'.$order->getId(), $request->request->get('_token'))) {
+            $em->remove($order);
+            $em->flush();
+            $this->addFlash('success', 'Commande supprimée avec succès.');
+        }
+
+        return $this->redirectToRoute('admin_order_index'); // adapte selon ta route liste commandes
+    }
 }

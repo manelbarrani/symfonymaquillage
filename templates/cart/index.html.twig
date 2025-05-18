@@ -139,6 +139,12 @@
                 </div>
                 {% endfor %}
             {% endif %}
+            {% if cart is not empty %}
+    <form action="{{ path('cart_checkout') }}" method="post">
+        <button type="submit" class="btn btn-buy mt-4">Acheter maintenant</button>
+    </form>
+{% endif %}
+
         </div>
     </div>
 </div>
