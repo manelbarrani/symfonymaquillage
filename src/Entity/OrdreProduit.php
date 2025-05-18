@@ -14,21 +14,18 @@ class OrdreProduit
     private ?int $id = null;
 
     #[ORM\ManyToOne(targetEntity: Ordre::class, inversedBy: 'ordreProduits')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: "CASCADE")]
     private ?Ordre $ordre = null;
 
     #[ORM\ManyToOne(targetEntity: Produit::class)]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: "CASCADE")]
     private ?Produit $produit = null;
 
     #[ORM\Column(type: 'integer')]
     private int $quantity = 1;
 
-    public function __construct(?Produit $produit = null, int $quantity = 1)
-    {
-        $this->produit = $produit;
-        $this->quantity = $quantity;
-    }
+    #[ORM\Column(type: 'float')]
+    private float $prixUnitaire = 0;
 
     public function getId(): ?int
     {
@@ -43,7 +40,6 @@ class OrdreProduit
     public function setOrdre(?Ordre $ordre): self
     {
         $this->ordre = $ordre;
-
         return $this;
     }
 
@@ -55,7 +51,6 @@ class OrdreProduit
     public function setProduit(?Produit $produit): self
     {
         $this->produit = $produit;
-
         return $this;
     }
 
@@ -70,7 +65,22 @@ class OrdreProduit
             throw new \InvalidArgumentException("La quantité doit être au moins égale à 1.");
         }
         $this->quantity = $quantity;
-
         return $this;
+    }
+
+    public function getPrixUnitaire(): float
+    {
+        return $this->prixUnitaire;
+    }
+
+    public function setPrixUnitaire(float $prixUnitaire): self
+    {
+        $this->prixUnitaire = $prixUnitaire;
+        return $this;
+    }
+
+    public function getTotal(): float
+    {
+        return $this->prixUnitaire * $this->quantity;
     }
 }

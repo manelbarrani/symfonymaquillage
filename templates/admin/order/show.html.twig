@@ -1,0 +1,107 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Détail Commande #{{ order.id }}{% endblock %}
+
+{% block stylesheets %}
+<style>
+.container-order {
+    background-color: #fff0f6;
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 4px 15px rgba(214, 51, 108, 0.2);
+    color: #5a2a4a;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.container-order h2 {
+    color: #7b2d5d;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.detail-label {
+    font-weight: 600;
+    color: #8a497d;
+}
+
+.detail-value {
+    margin-bottom: 12px;
+}
+
+.badge-status {
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.bg-warning {
+    background-color: #ffb6c1 !important;
+    color: #7b2d5d !important;
+}
+
+.bg-success {
+    background-color: #f8bbd0 !important;
+    color: #4a235a !important;
+}
+
+.bg-danger {
+    background-color: #e75480 !important;
+    color: #fff !important;
+}
+
+.bg-secondary {
+    background-color: #d3a3b9 !important;
+    color: #5a2a4a !important;
+}
+</style>
+{% endblock %}
+
+{% block body %}
+    <div class="container-order">
+        <h2>Détails de la commande #{{ order.id }}</h2>
+
+        <div class="detail-value">
+            <span class="detail-label">Utilisateur :</span> {{ order.user.email }}
+        </div>
+
+        <div class="detail-value">
+            <span class="detail-label">Date de commande :</span> {{ order.createdAt|date('d/m/Y H:i') }}
+        </div>
+
+        <div class="detail-value">
+            <span class="detail-label">Total :</span> {{ order.total|number_format(2, ',', ' ') }} €
+        </div>
+
+        <div class="detail-value">
+            <span class="detail-label">Statut :</span>
+            {% if order.status == 'en_attente' %}
+                <span class="badge-status bg-warning">En attente</span>
+            {% elseif order.status == 'validee' %}
+                <span class="badge-status bg-success">Validée</span>
+            {% elseif order.status == 'annulee' %}
+                <span class="badge-status bg-danger">Annulée</span>
+            {% else %}
+                <span class="badge-status bg-secondary">Inconnu</span>
+            {% endif %}
+        </div>
+
+        <hr>
+
+        <h4>Produits commandés</h4>
+        <ul>
+            {% for item in order.ordreProduits %}
+                <li>{{ item.produit.name }} — Quantité : {{ item.quantity }}</li>
+            {% else %}
+                <li>Aucun produit trouvé dans cette commande.</li>
+            {% endfor %}
+        </ul>
+
+        <div class="mt-4">
+            <a href="{{ path('admin_order_index') }}" class="btn btn-outline-primary">
+                <i class="fas fa-arrow-left"></i> Retour à la liste
+            </a>
+        </div>
+    </div>
+{% endblock %}

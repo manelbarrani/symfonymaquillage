@@ -76,45 +76,54 @@ class CartController extends AbstractController
         return $this->redirectToRoute('app_pages');
     }
 
- #[Route('/cart/checkout', name: 'cart_checkout')]
-public function checkout(
-    SessionInterface $session,
-    Security $security,
-    ProduitRepository $produitRepository,
-    EntityManagerInterface $em
-): Response {
-    $cart = $session->get('cart', []);
-    if (empty($cart)) {
-        $this->addFlash('error', 'Votre panier est vide.');
-        return $this->redirectToRoute('app_cart');
-    }
-
-    $ordre = new Ordre();
-    $ordre->setUser($security->getUser());
-
-    $total = 0;
-
-    foreach ($cart as $id => $item) {
-        $produit = $produitRepository->find($id);
-        if ($produit) {
-            $ordreProduit = new OrdreProduit();
-            $ordreProduit->setProduit($produit);
-            $ordreProduit->setQuantity($item['quantity']);
-            $ordre->addOrdreProduit($ordreProduit);
-
-            $total += $produit->getPrice() * $item['quantity'];
+    #[Route('/cart/checkout', name: 'cart_checkout')]
+    public function checkout(
+        SessionInterface $session,
+        Security $security,
+        ProduitRepository $produitRepository,
+        EntityManagerInterface $em
+    ): Response {
+        $cart = $session->get('cart', []);
+        if (empty($cart)) {
+            $this->addFlash('error', 'Votre panier est vide.');
+            return $this->redirectToRoute('app_cart');
         }
+
+        $user = $security->getUser();
+        if (!$user) {
+            $this->addFlash('error', 'Vous devez être connecté pour valider votre commande.');
+            return $this->redirectToRoute('app_login'); // adapter selon votre route de login
+        }
+
+        $ordre = new Ordre();
+        $ordre->setUser($user);
+        $ordre->setCreatedAt(new \DateTime());
+        $ordre->setStatus('en cours'); // ou 'confirmé', selon votre logique
+
+        $total = 0;
+
+        foreach ($cart as $id => $item) {
+            $produit = $produitRepository->find($id);
+            if ($produit) {
+                $ordreProduit = new OrdreProduit();
+                $ordreProduit->setProduit($produit);
+                $ordreProduit->setQuantity($item['quantity']);
+                $ordreProduit->setOrdre($ordre); // Très important
+                $em->persist($ordreProduit);
+
+                $ordre->addOrdreProduit($ordreProduit);
+
+                $total += $produit->getPrice() * $item['quantity'];
+            }
+        }
+
+        $ordre->setTotal($total);
+        $em->persist($ordre);
+        $em->flush();
+
+        $session->remove('cart');
+        $this->addFlash('success', 'Achat confirmé ! Merci pour votre commande.');
+
+        return $this->redirectToRoute('app_pages');
     }
-
-    $ordre->setTotal($total);
-
-    $em->persist($ordre);
-    $em->flush();
-
-    $session->remove('cart');
-    $this->addFlash('success', 'Achat confirmé ! Merci pour votre commande.');
-
-    return $this->redirectToRoute('app_pages');
-}
-
 }

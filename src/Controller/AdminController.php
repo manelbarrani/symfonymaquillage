@@ -51,7 +51,7 @@ class AdminController extends AbstractController
             return $this->redirectToRoute('admin_product_index');
         }
 
-        return $this->render('admin/CreatProduct/index.html.twig', [ // ✅ Corrigé : "createProduct" au lieu de "CreatProduct"
+        return $this->render('admin/CreatProduct/index.html.twig', [ // Correction du chemin ici
             'form' => $form->createView()
         ]);
     }
@@ -96,7 +96,7 @@ class AdminController extends AbstractController
     #[Route('/products/delete/{id}', name: 'admin_product_delete', methods: ['POST'])]
     public function deleteProduct(Request $request, Produit $product, EntityManagerInterface $em): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$product->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $product->getId(), $request->request->get('_token'))) {
             $em->remove($product);
             $em->flush();
 
@@ -110,7 +110,7 @@ class AdminController extends AbstractController
     #[Route('/users/delete/{id}', name: 'admin_user_delete', methods: ['POST'])]
     public function deleteUser(Request $request, User $user, EntityManagerInterface $em): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$user->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $user->getId(), $request->request->get('_token'))) {
             $em->remove($user);
             $em->flush();
 
@@ -135,16 +135,26 @@ class AdminController extends AbstractController
             'orders' => $pagination
         ]);
     }
-        #[Route('/admin/order/{id}/delete', name: 'admin_order_delete', methods: ['POST'])]
-    public function deleteOrder(Request $request, EntityManagerInterface $em, Ordre $order): RedirectResponse
+
+    // ✅ Détail d'une commande
+    #[Route('/order/{id}', name: 'admin_order_show')]
+    public function show(Ordre $ordre): Response
     {
-        // Protection contre les CSRF tokens si tu utilises un formulaire
-        if ($this->isCsrfTokenValid('delete'.$order->getId(), $request->request->get('_token'))) {
-            $em->remove($order);
+        return $this->render('admin/order/show.html.twig', [
+            'order' => $ordre,
+        ]);
+    }
+
+    // ✅ Supprimer une commande
+    #[Route('/order/{id}/delete', name: 'admin_order_delete', methods: ['POST'])]
+    public function delete(Request $request, Ordre $ordre, EntityManagerInterface $em): Response
+    {
+        if ($this->isCsrfTokenValid('delete' . $ordre->getId(), $request->request->get('_token'))) {
+            $em->remove($ordre);
             $em->flush();
-            $this->addFlash('success', 'Commande supprimée avec succès.');
+            $this->addFlash('success', 'Commande supprimée.');
         }
 
-        return $this->redirectToRoute('admin_order_index'); // adapte selon ta route liste commandes
+        return $this->redirectToRoute('admin_order_index');
     }
 }
