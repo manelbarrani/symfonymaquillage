@@ -1,0 +1,72 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Produits - Maquillage Chic{% endblock %}
+
+{% block body %}
+<h1 class="mb-4">Nos Produits</h1>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <form method="get" action="{{ path('app_pages') }}">
+            <div class="mb-3">
+                <label for="categorie" class="form-label fw-bold">Catégorie</label>
+                <select name="categorie" id="categorie" class="form-select">
+                    <option value="">-- Toutes --</option>
+                    {% for categorie in categories %}
+                        <option value="{{ categorie.id }}" {% if selectedCategory == categorie.id %}selected{% endif %}>{{ categorie.nom }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn btn-pink w-100">Filtrer</button>
+        </form>
+    </div>
+
+    <div class="col-md-9">
+        {% if products is empty %}
+            <p class="text-muted">Aucun produit trouvé pour ces critères.</p>
+        {% else %}
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                {% for produit in products %}
+                    <div class="col">
+                        <div class="card h-100 shadow-sm">
+{% if produit.image %}
+    <img src="{{ produit.image }}" class="card-img-top" alt="{{ produit.name }}">
+{% else %}
+    <img src="https://via.placeholder.com/300x200?text=Produit+Image" class="card-img-top" alt="Image manquante">
+{% endif %}
+
+
+                            <div class="card-body">
+                                <h5 class="card-title">{{ produit.name }}</h5>
+
+                                <p class="card-text text-muted">
+                                    {{ produit.description|length > 100 ? produit.description|slice(0, 100) ~ '...' : produit.description }}
+                                </p>
+
+                                <p class="mb-1">
+                                    <strong class="text-pink">{{ produit.price|number_format(2, ',', ' ') }} €</strong>
+                                    {% if produit.onSale %}
+                                        <span class="text-muted text-decoration-line-through ms-2">{{ produit.oldPrice|number_format(2, ',', ' ') }} €</span>
+                                        <span class="badge bg-danger ms-2">
+                                            -{{ ((1 - produit.price / produit.oldPrice) * 100)|round }}%
+                                        </span>
+                                    {% endif %}
+                                </p>
+
+                                {% if produit.isNew %}
+                                    <span class="badge bg-success">Nouveau</span>
+                                {% endif %}
+                            </div>
+
+                            <div class="card-footer d-flex flex-column gap-2">
+                                <a href="#" class="btn btn-outline-pink btn-sm w-100">Voir</a>
+                                <a href="{{ path('app_add_to_cart', {'id': produit.id}) }}" class="btn btn-pink btn-sm w-100">Ajouter au panier</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

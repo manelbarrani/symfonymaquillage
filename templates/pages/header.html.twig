@@ -1,0 +1,114 @@
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg custom-navbar shadow-sm">
+    <div class="container">
+        <a class="navbar-brand text-dark fw-bold fs-4" href="{{ path('app_pages') }}">
+            <i class="fa-solid fa-gem me-1 text-pink"></i> Beauty
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+            <ul class="navbar-nav align-items-center gap-3">
+
+                <li class="nav-item">
+                    <a class="nav-link text-dark fw-semibold" href="{{ path('app_home') }}">Accueil</a>
+                </li>
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle text-dark fw-semibold" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Catégories
+                    </a>
+                    <ul class="dropdown-menu">
+                        {% for categorie in categories %}
+                            <li><a class="dropdown-item" href="{{ path('categorie_show', {id: categorie.id}) }}">{{ categorie.nom }}</a></li>
+                        {% else %}
+                            <li><span class="dropdown-item">Aucune catégorie</span></li>
+                        {% endfor %}
+                    </ul>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link text-dark fw-semibold" href="{{ path('app_pages') }}">Produits</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-dark fw-semibold" href="{{ path('app_chat') }}">Conseils Beauté </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ path('app_cart') }}" class="btn btn-outline-pink position-relative">
+                        <i class="bi bi-bag-heart"></i>
+                        <span class="badge bg-pink rounded-pill position-absolute top-0 start-100 translate-middle">
+                            {{ app.session.get('cart') is iterable ? app.session.get('cart')|length : 0 }}
+                        </span>
+                    </a>
+                </li>
+
+                {% if app.user %}
+                <li class="nav-item">
+                    <a href="{{ path('app_logout') }}" class="btn btn-pink">
+                        <i class="fas fa-sign-out-alt me-1"></i> Déconnexion
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Styles personnalisés -->
+<style>
+    .custom-navbar {
+        background-color: #fff6f9;
+        border-bottom: 1px solid rgb(109, 101, 101);
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .text-pink {
+        color: #e91e63;
+    }
+
+    .btn-pink {
+        background-color: #e91e63;
+        color: white;
+        border: none;
+        border-radius: 30px;
+        padding: 6px 16px;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-pink:hover {
+        background-color: #d81b60;
+        color: white;
+    }
+
+    .btn-outline-pink {
+        border: 1px solid #e91e63;
+        color: #e91e63;
+        border-radius: 30px;
+        padding: 6px 12px;
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .btn-outline-pink:hover {
+        background-color: #e91e63;
+        color: white;
+    }
+
+    .badge.bg-pink {
+        background-color: #e91e63;
+    }
+
+    /* Dropdown custom */
+    .dropdown-menu {
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(233, 30, 99, 0.15);
+        font-weight: 600;
+    }
+
+    .dropdown-item:hover, .dropdown-item:focus {
+        background-color: #fce4ec;
+        color: #e91e63;
+    }
+</style>

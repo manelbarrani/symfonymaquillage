@@ -1,0 +1,167 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Créer un Nouveau Produit{% endblock %}
+
+{% block styles %}
+<style>
+    body {
+        background-color: white !important;
+    }
+    .form-container {
+        max-width: 900px;
+        margin: 0 auto;
+        background: #fff0f5;
+        border-radius: 15px;
+        box-shadow: 0 0 25px #d770ad;
+    }
+    .form-control {
+        border-radius: 8px;
+        border: 1px solid #e2cfe9;
+        transition: all 0.3s ease;
+    }
+    .form-control:focus {
+        box-shadow: 0 0 0 0.25rem rgba(215,112,173,0.25);
+        border-color: #d770ad;
+    }
+    .form-label {
+        color: #b14d8f;
+        font-weight: 600;
+    }
+    .card {
+        background-color: #fff8fc;
+        border: 1px solid #f8d2e7;
+    }
+      .btn-primary {
+        background-color:rgb(28, 3, 36);
+        border-color:rgb(245, 240, 244);
+    }
+
+    .btn-primary:hover {
+        background-color:rgb(244, 225, 241);
+        border-color:rgb(250, 228, 247);
+    }
+
+    .image-preview {
+        border: 2px dashed #eab0d5;
+        border-radius: 8px;
+        padding: 1rem;
+        text-align: center;
+        min-height: 200px;
+        background: #fff8fc;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .image-preview img {
+        max-width: 100%;
+        max-height: 180px;
+        border-radius: 6px;
+        display: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-container p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h4 mb-0 text-purple">Créer un nouveau produit</h1>
+        <a href="{{ path('admin_product_index') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Retour à la liste
+        </a>
+    </div>
+
+    {{ form_start(form) }}
+    <div class="card shadow-sm border-0 p-4">
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    {{ form_label(form.name, 'Nom du produit') }}
+                    {{ form_widget(form.name, {'attr': {'class': 'form-control', 'placeholder': 'Ex : Rouge à lèvres'}}) }}
+                    {{ form_errors(form.name) }}
+                </div>
+                <div class="mb-3">
+                    {{ form_label(form.description, 'Description') }}
+                    {{ form_widget(form.description, {'attr': {'class': 'form-control', 'rows': 4, 'placeholder': 'Décrivez le produit'}}) }}
+                    {{ form_errors(form.description) }}
+                </div>
+                <div class="mb-3">
+                    {{ form_label(form.price, 'Prix') }}
+                    <div class="input-group">
+                        <span class="input-group-text">€</span>
+                        {{ form_widget(form.price, {'attr': {'class': 'form-control', 'placeholder': '0.00'}}) }}
+                    </div>
+                    {{ form_errors(form.price) }}
+                </div>
+                <div class="mb-3">
+                    {{ form_label(form.quantity, 'Quantité en stock') }}
+                    {{ form_widget(form.quantity, {'attr': {'class': 'form-control', 'placeholder': 'Ex : 10'}}) }}
+                    {{ form_errors(form.quantity) }}
+                </div>
+                <div class="mb-3">
+                    {{ form_label(form.image, "URL de l'image") }}
+                    <div class="image-preview mb-3" id="imagePreview">
+                        <div class="text-muted default-message">
+                            <i class="fas fa-image fa-2x mb-2"></i>
+                            <p class="mb-0">Aperçu de l’image</p>
+                        </div>
+                        <img id="previewImage" src="#" alt="Aperçu de l'image">
+                    </div>
+                    <div class="mb-3">
+    {{ form_label(form.categorie, 'Catégorie') }}
+    {{ form_widget(form.categorie, {'attr': {'class': 'form-control'}}) }}
+    {{ form_errors(form.categorie) }}
+</div>
+
+                    {{ form_widget(form.image, {
+                        'attr': {
+                            'class': 'form-control',
+                            'placeholder': 'https://exemple.com/image.jpg',
+                            'oninput': 'updatePreview(this.value)'
+                        }
+                    }) }}
+                    {{ form_errors(form.image) }}
+                    <small class="text-muted">Saisissez l’URL complète (ex : https://exemple.com/image.jpg)</small>
+                </div>
+            </div>
+        </div>
+        <div class="mt-4 text-center">
+            <button type="submit" class="btn btn-primary btn-lg px-5">
+                <i class="fas fa-save me-2"></i>Créer le produit
+            </button>
+        </div>
+    </div>
+    {{ form_end(form) }}
+</div>
+
+<script>
+function updatePreview(imageUrl) {
+    const preview = document.getElementById('previewImage');
+    const defaultMessage = document.querySelector('.default-message');
+    
+    if (imageUrl) {
+        preview.src = imageUrl;
+        preview.style.display = 'block';
+        defaultMessage.style.display = 'none';
+        
+        preview.onerror = function() {
+            preview.style.display = 'none';
+            defaultMessage.innerHTML = `
+                <i class="fas fa-exclamation-triangle text-danger me-2"></i>
+                <span class="text-danger">URL invalide</span>
+            `;
+        };
+        
+        preview.onload = function() {
+            defaultMessage.style.display = 'none';
+        };
+    } else {
+        preview.style.display = 'none';
+        defaultMessage.style.display = 'block';
+        defaultMessage.innerHTML = `
+            <i class="fas fa-image fa-2x mb-2"></i>
+            <p class="mb-0">Aperçu de l’image</p>
+        `;
+    }
+}
+</script>
+{% endblock %}

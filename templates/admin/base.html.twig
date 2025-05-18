@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Admin - Tableau de bord{% endblock %}</title>
+
+    <!-- CSS externes -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/v/bs5/dt-2.0.3/datatables.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color:rgb(252, 243, 248);
+            font-family: 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .navbar {
+            background: linear-gradient(to right,rgb(251, 242, 245),rgb(252, 245, 247));
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            color: rgb(28, 3, 36);
+        }
+
+        .navbar-toggler {
+            border: none;
+        }
+
+        .navbar-nav .nav-link {
+            color:rgb(204, 14, 71);
+            font-weight: 500;
+            margin-right: 15px;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: rgb(37, 2, 49);
+            background-color: rgba(255,255,255,0.15);
+            border-radius: 8px;
+        }
+
+        .btn-logout {
+            border-color: rgb(190, 29, 86);
+            color: rgb(190, 29, 86);
+            transition: 0.3s ease;
+        }
+
+        .btn-logout:hover {
+            background-color:rgb(236, 69, 124);
+            border-color:rgb(190, 29, 86);
+            color: white;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 2rem 0;
+        }
+
+        .footer {
+            background: linear-gradient(to right,rgb(248, 239, 246),rgb(241, 225, 236));
+            color: #fff;
+            padding: 1.5rem 0;
+            font-size: 0.9rem;
+        }
+
+        .footer .text-muted {
+            color:rgb(58, 17, 42) !important;
+        }
+
+        /* Table et boutons datatables */
+        table.dataTable thead {
+            background-color: #fce5f1;
+            color:rgb(78, 5, 51);
+        }
+
+        table.dataTable tbody tr:hover {
+            background-color: #fff0fa;
+        }
+
+        /* Responsive fix pour petits écrans */
+        @media (max-width: 768px) {
+            .navbar-nav {
+                text-align: center;
+            }
+            .btn-logout {
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+        <a class="navbar-brand" href="#">Admin</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNavbar" aria-controls="adminNavbar" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="adminNavbar">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ path('admin_product_index') }}">
+                        <i class="fas fa-box me-1"></i> Produits
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ path('admin_user_index') }}">
+                        <i class="fas fa-users me-1"></i> Utilisateurs
+                    </a>
+                </li>
+            </ul>
+            <div class="d-flex">
+                <a href="{{ path('app_logout') }}" class="btn btn-outline-light btn-logout">
+                    <i class="fas fa-sign-out-alt me-2"></i> Déconnexion
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<main class="main-content">
+    <div class="container">
+        {% block body %}
+            {% block content %}{% endblock %}
+        {% endblock %}
+    </div>
+</main>
+
+<footer class="footer mt-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6 text-md-start mb-3 mb-md-0">
+                <span class="text-muted">&copy; {{ "now"|date("Y") }} manelbarrani@gmail.com.</span>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <div class="text-muted">
+                    Admin Panel v1.0.0
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/v/bs5/dt-2.0.3/datatables.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#datatable').DataTable();
+    });
+</script>
+</body>
+</html>

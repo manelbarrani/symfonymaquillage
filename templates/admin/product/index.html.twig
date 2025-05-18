@@ -1,0 +1,131 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block content %}
+<style>
+    body {
+        background-color: #fdfbff;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .card {
+        border-radius: 15px;
+        border: none;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    .card-header {
+        background-color:rgb(251, 237, 243);
+        border-bottom: 1px solid #f2f2f2;
+        color: rgb(28, 3, 36);
+        font-weight: 600;
+    }
+
+    .btn-primary {
+        background-color:rgb(28, 3, 36);
+        border-color:rgb(245, 240, 244);
+    }
+
+    .btn-primary:hover {
+        background-color:rgb(244, 225, 241);
+        border-color:rgb(250, 228, 247);
+    }
+
+    .table {
+        background-color: white;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .table thead {
+        background-color: #f9f1ff;
+        color:rgb(228, 17, 144);
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #f8f0ff;
+        transition: background-color 0.2s ease-in-out;
+    }
+
+    .btn-sm {
+        padding: 0.35rem 0.75rem;
+    }
+
+    .btn-warning {
+        background-color:#d0bfff;
+        border-color:rgb(26, 1, 27);
+        color:rgb(14, 1, 8);
+    }
+
+    .btn-warning:hover {
+        background-color:rgb(246, 219, 147);
+        border-color:rgb(26, 1, 27);
+        color:rgb(0, 0, 0);
+    }
+
+    .btn-danger {
+        background-color:rgb(208, 24, 85);
+        border-color:rgb(129, 5, 47);
+    }
+
+    .btn-danger:hover {
+        background-color:rgb(246, 219, 147);
+        border-color:rgb(146, 92, 47);
+    }
+
+    .fa-edit, .fa-trash {
+        color:  block;
+    }
+</style>
+
+<div class="card shadow-sm">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h4 class="mb-0">Gestion des Produits</h4>
+        <a href="{{ path('admin_product_new') }}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>  Produit
+        </a>
+    </div>
+    <div class="card-body">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Prix</th>
+                    <th>Quantité</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                <tr>
+                    <td>{{ product.name }}</td>
+                    <td>${{ product.price|number_format(2) }}</td>
+                    <td>{{ product.quantity }}</td>
+                    <td>{{ product.createdAt|date('Y-m-d H:i') }}</td>
+                    <td>
+                        <a href="{{ path('admin_product_edit', {'id': product.id}) }}" 
+                           class="btn btn-sm btn-warning me-1"
+                           title="Modifier">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <form method="post" 
+                              action="{{ path('admin_product_delete', {'id': product.id}) }}" 
+                              class="d-inline"
+                              onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce produit ?');">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ product.id) }}">
+                            <button class="btn btn-sm btn-danger" title="Supprimer">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" class="text-center text-muted">Aucun produit trouvé.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

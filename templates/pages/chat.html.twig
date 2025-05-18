@@ -1,0 +1,112 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<section class="container my-5 beauty-container">
+    <h3 class="text-center mb-4 beauty-title">💄 Conseils Beauté avec BeautyAdvices</h3>
+    <div class="input-group mb-3 beauty-input-group">
+        <input type="text" id="beauty-question" class="form-control beauty-input" placeholder="Quel est votre besoin ? (ex: peau sèche, rouge à lèvres pour l’été)">
+        <button class="btn beauty-btn" id="ask-button">Demander</button>
+    </div>
+    <div id="ai-answer" class="mt-3 alert beauty-alert d-none"></div>
+</section>
+
+<style>
+    .beauty-container {
+        max-width: 600px;
+        background: #fff0f6; /* rose poudré clair */
+        border-radius: 15px;
+        padding: 30px 25px;
+        box-shadow: 0 8px 20px rgba(255, 182, 193, 0.3); /* ombre douce rose */
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #5a2a50; /* violet prune doux */
+    }
+
+    .beauty-title {
+        font-weight: 700;
+        font-size: 1.8rem;
+        color: #d6336c; /* rose vif */
+        text-shadow: 1px 1px 2px #fff0f6;
+    }
+
+    .beauty-input-group {
+        display: flex;
+        gap: 10px;
+    }
+
+    .beauty-input {
+        border: 2px solid #d6336c;
+        border-radius: 12px;
+        padding: 12px 15px;
+        font-size: 1rem;
+        transition: border-color 0.3s ease;
+    }
+    .beauty-input:focus {
+        border-color: #a40e4c;
+        box-shadow: 0 0 8px #f9c6d3;
+        outline: none;
+    }
+
+    .beauty-btn {
+        background: linear-gradient(45deg, #d6336c, #a40e4c);
+        border: none;
+        color: white;
+        font-weight: 600;
+        font-size: 1rem;
+        padding: 12px 25px;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: background 0.3s ease;
+        box-shadow: 0 5px 10px rgba(214, 51, 108, 0.6);
+    }
+    .beauty-btn:hover {
+        background: linear-gradient(45deg, #a40e4c, #d6336c);
+        box-shadow: 0 7px 14px rgba(214, 51, 108, 0.8);
+    }
+
+    .beauty-alert {
+        background-color: #f8d7da;
+        color: #842029;
+        border-radius: 12px;
+        padding: 15px 20px;
+        font-weight: 500;
+        font-size: 1.1rem;
+        border: 1px solid #f5c2c7;
+    }
+</style>
+
+<script>
+    document.getElementById('ask-button').addEventListener('click', async () => {
+        const question = document.getElementById('beauty-question').value.trim();
+        const answerBox = document.getElementById('ai-answer');
+
+        if (!question) {
+            answerBox.textContent = "Veuillez saisir une question.";
+            answerBox.classList.remove('d-none');
+            return;
+        }
+
+        answerBox.classList.add('d-none');
+        answerBox.textContent = '';
+
+        try {
+            const response = await fetch('/beauty-advice', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: new URLSearchParams({question})
+            });
+
+            const data = await response.json();
+            if (data.answer) {
+                answerBox.textContent = data.answer;
+                answerBox.classList.remove('d-none');
+            } else {
+                answerBox.textContent = "Une erreur est survenue.";
+                answerBox.classList.remove('d-none');
+            }
+        } catch (error) {
+            answerBox.textContent = "Erreur réseau ou serveur.";
+            answerBox.classList.remove('d-none');
+        }
+    });
+</script>
+{% endblock %}

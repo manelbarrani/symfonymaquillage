@@ -1,0 +1,119 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block content %}
+<style>
+    body {
+        background-color: #fdfbff;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .card {
+        border-radius: 15px;
+        border: none;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    .card-header {
+        background-color: #fff0f6;
+        border-bottom: 1px solid #f2f2f2;
+        color:rgb(28, 3, 36);
+        font-weight: 600;
+    }
+
+    .table {
+        background-color: white;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .table thead {
+        background-color: #f9f1ff;
+        color:rgb(137, 10, 93);
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #f8f0ff;
+        transition: background-color 0.2s ease-in-out;
+    }
+
+    .badge {
+        font-size: 0.85rem;
+        padding: 6px 12px;
+        border-radius: 12px;
+        background-color: #d0bfff;
+        color:rgb(43, 3, 30);
+    }
+
+    .btn-outline-danger {
+        color: #d63384;
+        border-color: #f8d7da;
+    }
+
+    .btn-outline-danger:hover {
+        background-color: #f8d7da;
+        color: rgb(237, 48, 102);
+        border-color: #f5c2c7;
+    }
+
+    .btn-sm {
+        padding: 0.35rem 0.75rem;
+    }
+
+    .table td,
+    .table th {
+        vertical-align: middle;
+    }
+
+    .fa-trash {
+        color:rgb(237, 48, 102);
+    }
+
+    .fa-trash:hover {
+        color: rgb(237, 48, 102);
+    }
+</style>
+
+<div class="card shadow-sm">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h4 class="mb-0">Gestion des Utilisateurs</h4>
+    </div>
+    <div class="card-body">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Email</th>
+                    <th>Rôles</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.email }}</td>
+                    <td>
+                        {% for role in user.roles %}
+                        <span class="badge">{{ role }}</span>
+                        {% endfor %}
+                    </td>
+                    <td>
+                        <form method="post"
+                              action="{{ path('admin_user_delete', {'id': user.id}) }}"
+                              class="d-inline"
+                              onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?');">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
+                            <button class="btn btn-sm btn-outline-danger" title="Supprimer l'utilisateur">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="3" class="text-center text-muted">Aucun utilisateur trouvé.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
