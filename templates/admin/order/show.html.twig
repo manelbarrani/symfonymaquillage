@@ -55,53 +55,107 @@
     background-color: #d3a3b9 !important;
     color: #5a2a4a !important;
 }
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.product-card {
+    background-color: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(214, 51, 108, 0.1);
+    text-align: center;
+    transition: transform 0.2s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+}
+
+.product-card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-bottom: 1px solid #f8c1d9;
+}
+
+.product-card .card-body {
+    padding: 10px;
+}
+
+.product-card .card-body h6 {
+    color: #7b2d5d;
+    font-weight: bold;
+    margin: 10px 0 5px;
+}
+
+.product-card .card-body p {
+    margin: 0;
+    color: #8a497d;
+    font-size: 0.9rem;
+}
 </style>
 {% endblock %}
 
 {% block body %}
-    <div class="container-order">
-        <h2>Détails de la commande #{{ order.id }}</h2>
+<div class="container-order">
+    <h2>Détails de la commande #{{ order.id }}</h2>
 
-        <div class="detail-value">
-            <span class="detail-label">Utilisateur :</span> {{ order.user.email }}
-        </div>
-
-        <div class="detail-value">
-            <span class="detail-label">Date de commande :</span> {{ order.createdAt|date('d/m/Y H:i') }}
-        </div>
-
-        <div class="detail-value">
-            <span class="detail-label">Total :</span> {{ order.total|number_format(2, ',', ' ') }} €
-        </div>
-
-        <div class="detail-value">
-            <span class="detail-label">Statut :</span>
-            {% if order.status == 'en_attente' %}
-                <span class="badge-status bg-warning">En attente</span>
-            {% elseif order.status == 'validee' %}
-                <span class="badge-status bg-success">Validée</span>
-            {% elseif order.status == 'annulee' %}
-                <span class="badge-status bg-danger">Annulée</span>
-            {% else %}
-                <span class="badge-status bg-secondary">Inconnu</span>
-            {% endif %}
-        </div>
-
-        <hr>
-
-        <h4>Produits commandés</h4>
-        <ul>
-            {% for item in order.ordreProduits %}
-                <li>{{ item.produit.name }} — Quantité : {{ item.quantity }}</li>
-            {% else %}
-                <li>Aucun produit trouvé dans cette commande.</li>
-            {% endfor %}
-        </ul>
-
-        <div class="mt-4">
-            <a href="{{ path('admin_order_index') }}" class="btn btn-outline-primary">
-                <i class="fas fa-arrow-left"></i> Retour à la liste
-            </a>
-        </div>
+    <div class="detail-value">
+        <span class="detail-label">Utilisateur :</span> {{ order.user.email }}
     </div>
+
+    <div class="detail-value">
+        <span class="detail-label">Date de commande :</span> {{ order.createdAt|date('d/m/Y H:i') }}
+    </div>
+
+    <div class="detail-value">
+        <span class="detail-label">Total :</span> {{ order.total|number_format(2, ',', ' ') }} €
+    </div>
+
+    <div class="detail-value">
+        <span class="detail-label">Statut :</span>
+        {% if order.status == 'en_attente' %}
+            <span class="badge-status bg-warning">En attente</span>
+        {% elseif order.status == 'validee' %}
+            <span class="badge-status bg-success">Validée</span>
+        {% elseif order.status == 'annulee' %}
+            <span class="badge-status bg-danger">Annulée</span>
+        {% else %}
+            <span class="badge-status bg-secondary">Inconnu</span>
+        {% endif %}
+    </div>
+
+    <hr>
+
+    <h4>Produits commandés</h4>
+    <div class="product-grid">
+        {% for item in order.ordreProduits %}
+            {% set produit = item.produit %}
+            <div class="product-card">
+                {% if produit.image %}
+                    <img src="{{ produit.image }}" alt="{{ produit.name }}">
+                {% else %}
+                    <img src="https://via.placeholder.com/300x200?text=Produit+Image" alt="Image manquante">
+                {% endif %}
+                <div class="card-body">
+                    <h6>{{ produit.name }}</h6>
+                    <p>Quantité : {{ item.quantity }}</p>
+                </div>
+            </div>
+        {% else %}
+            <p>Aucun produit trouvé dans cette commande.</p>
+        {% endfor %}
+    </div>
+
+    <div class="mt-4">
+        <a href="{{ path('admin_order_index') }}" class="btn btn-outline-primary">
+            <i class="fas fa-arrow-left"></i> Retour à la liste
+        </a>
+    </div>
+</div>
 {% endblock %}
